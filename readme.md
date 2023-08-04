@@ -5,7 +5,7 @@
     ```
     AlphaHex
     ├── GameRule.py : 游戏状态建模
-    ├── HumanPlay.py : 支持人机、机机对战的TUI界面
+    ├── HumanPlay.py : 对战接口
     ├── MCTS_hex.py : 单纯的MCTS算法实现
     ├── train.py : 神经网络的训练实现
     └── README.md
@@ -23,3 +23,8 @@
 - 实现了HumanPlay.py的基础设置，支持人类玩家游玩
 - 实现了MCTS_hex.py,完成了Python版本的基本MCTS算法
 - 初步探索train.py的实现
+
+### 2023.8.4
+- 对MCTS_hex.py完成了重构，优化代码结构
+- 对MCTS_hex.py进行了优化，添加接入神经网络的接口
+- 修改了GameRule.py的错误

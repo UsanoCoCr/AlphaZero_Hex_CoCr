@@ -1,8 +1,7 @@
 import torch
-import numpy as np
 from torch import optim
 from torch.nn import MSELoss
-from ActorCritic import ActorCriticNetwork
+from ActorCriticNetwork import ActorCriticNetwork
 from generate_self_play_data import generate_self_play_data
 
 def train():
@@ -22,7 +21,7 @@ def train():
     except FileNotFoundError:
         print("No model found on disk, starting from scratch")
 
-    optimizer = optim.AdamW(network.parameters(), lr=learning_rate)
+    optimizer = optim.Adam(network.parameters(), lr=learning_rate)
 
     # Loss functions
     value_loss_fn = MSELoss()

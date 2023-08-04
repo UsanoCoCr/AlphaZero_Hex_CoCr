@@ -1,11 +1,13 @@
 from GameRule import Board
-from MCTS_hex import Node, MCTS, UCB1_select
+from MCTS_hex import MCTSPlayer
+import numpy as np
+import copy
 
 class HumanPlayer:
     def __init__(self, color):
         self.color = color
 
-    def get_move(self, board):
+    def get_action(self, board):
         while True:
             if self.color == 1 and board.get_valid_moves().shape[0] == 121:
                 print("Red's first move must be at C1 (1 2).")
@@ -17,63 +19,34 @@ class HumanPlayer:
             else:
                 print("Invalid move. Please enter again.")
 
-class MCTSPlayer:
-    def __init__(self, iterations):
-        self.iterations = iterations
+    def set_player_ind(self, p):
+        self.player = p
 
-    def get_move(self, board):
-        root = Node(board)
-        best_child = MCTS(root, self.iterations)
-        return best_child.action
-    
-def print_board(board):
-    print("  ", end="")
-    for i in range(board.size):
-        print(chr(ord('A') + i), end=" ")
-    print()
-    for i in range(board.size):
-        print(" " * i, end="")
-        print(i, end=" ")
-        print(" ".join("\033[31mR\033[0m" if x == 1 else "\033[34mB\033[0m" if x == -1 else '.' for x in board.board[i]))
-    print()
-
-def MCTS_main():
+def play(player1, player2, startplayer=1):
     board = Board()
-    players = [MCTSPlayer(1000), MCTSPlayer(1000)]
-    print_board(board)
+    board.reset()
+    players = {1: player1, -1: player2}
+    player1.set_player_ind(1)
+    player2.set_player_ind(-1)
+    board.player = startplayer
     while True:
-        for player in players:
-            x, y = player.get_move(board)
-            board.move(x, y)
-            print_board(board)
-            game_over, winner = board.is_game_over()
-            if game_over:
-                if winner == 1:
-                    print("Red wins!")
-                elif winner == -1:
-                    print("Blue wins!")
-                else:
-                    print("Draw!")
-                return
-
-def HumanMain():
-    board = Board()
-    players = [HumanPlayer(1), HumanPlayer(-1)]
-    print_board(board)
-    while True:
-        for player in players:
-            x, y = player.get_move(board)
-            board.move(x, y)
-            print_board(board)
-            game_over, winner = board.is_game_over()
-            if game_over:
-                if winner == 1:
-                    print("Red wins!")
-                elif winner == -1:
-                    print("Blue wins!")
-                else:
-                    print("Draw!")
-                return
+        current_player = board.player
+        player_in_turn = players[current_player]
+        action = player_in_turn.get_action(board)
+        board.move(action[0], action[1])
+        board.print_board()
+        game_over, winner = board.is_game_over()
+        if game_over:
+            if winner == 1:
+                print("Red wins!")
+            elif winner == -1:
+                print("Blue wins!")
+            else:
+                print("Draw!")
+            break
 
 if __name__ == "__main__":
-    MCTS_main()
+    print("game start")
+    player1 = HumanPlayer(1)
+    player2 = MCTSPlayer(-1, c_puct=0.5, iterations=1000)
+    play(player1, player2)
