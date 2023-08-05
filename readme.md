@@ -28,3 +28,9 @@
 - 对MCTS_hex.py完成了重构，优化代码结构
 - 对MCTS_hex.py进行了优化，添加接入神经网络的接口
 - 修改了GameRule.py的错误
+
+### 2023.8.5
+- 增加了MCTS_alphahex.py，插入神经网络的MCTS算法，但出现policy=None的错误
+- 增加了train.py
+- 增加了ActorCriticNetwork.py，实现了ActorCritic网络的搭建
+- 改进了GameRule.py，增加VirtualGame类，实现了抽象对局
