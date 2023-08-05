@@ -38,6 +38,7 @@ class Train():
         else:
             # 重新训练
             self.policy_value_net = PolicyValueNet(self.board_width, self.board_height, use_gpu=True)
+        # 问题出在这，MCTSPlayer多出了一个color的成员变量
         self.mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn, c_puct=self.c_puct, iterations=self.n_playout, is_selfplay=1)
 
     def get_equi_data(self, play_data):
@@ -63,6 +64,8 @@ class Train():
     def collect_selfplay_data(self, n_games=1):
         # 收集自我对弈数据
         for i in range(n_games):
+            # error: policy in train.py is: none
+            print("policy in train.py is: ", self.mcts_player.mcts.policy)
             winner, play_data = self.game.self_play(self.mcts_player, temp=self.temp)
             play_data = list(play_data)[:]
             self.episode_len = len(play_data)
