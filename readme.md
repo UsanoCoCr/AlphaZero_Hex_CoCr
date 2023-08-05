@@ -5,9 +5,11 @@
     ```
     AlphaHex
     ├── GameRule.py : 游戏状态建模
-    ├── HumanPlay.py : 对战接口
-    ├── MCTS_hex.py : 单纯的MCTS算法实现
+    ├── HumanPlay.py : 对战接口 - finish
+    ├── MCTS_hex.py : 单纯的MCTS算法实现 - finish
     ├── train.py : 神经网络的训练实现
+    ├── MCTS_alphahex.py : 插入神经网络的MCTS算法实现
+    ├── ActorCriticNetwork.py : ActorCritic网络的搭建
     └── README.md
     ```
 
