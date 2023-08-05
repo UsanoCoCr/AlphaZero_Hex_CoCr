@@ -63,3 +63,24 @@ class Board:
             print(i, end=" ")
             print(" ".join("\033[31mR\033[0m" if x == 1 else "\033[34mB\033[0m" if x == -1 else '.' for x in self.board[i]))
         print()
+
+    def current_state(self):
+        """return the board state from the perspective of the current player.
+        state shape: 4*width*height
+        """
+
+        square_state = np.zeros((4, self.size, self.size))
+        if not np.all(self.board == 0):
+            moves, players = np.array(list(zip(*self.board.items())))
+            move_curr = moves[players == self.player]
+            move_oppo = moves[players != self.player]
+            square_state[0][move_curr // self.size,
+                            move_curr % self.size] = 1.0
+            square_state[1][move_oppo // self.size,
+                            move_oppo % self.size] = 1.0
+            # indicate the last move location
+            square_state[2][self.last_move // self.size,
+                            self.last_move % self.size] = 1.0
+        if self.board.sum() % 2 == 0:
+            square_state[3][:, :] = 1.0
+        return square_state[:, ::-1, :]

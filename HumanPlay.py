@@ -45,6 +45,60 @@ def play(player1, player2, startplayer=1):
                 print("Draw!")
             break
 
+class VirtualGame:
+    def __init__(self):
+        self.board = Board()
+        self.board.reset()
+        self.board.player = 1
+    
+    def reset(self):
+        self.board.reset()
+        self.board.player = 1
+
+    def play(self, player1, player2, startplayer=1):
+        self.board.reset()
+        self.players = {1: player1, -1: player2}
+        player1.set_player_ind(1)
+        player2.set_player_ind(-1)
+        self.board.player = startplayer
+        while True:
+            current_player = self.board.player
+            player_in_turn = self.players[current_player]
+            action = player_in_turn.get_action(self.board)
+            self.board.move(action[0], action[1])
+            game_over, winner = self.board.is_game_over()
+            if game_over:
+                if winner == 1:
+                    return 1
+                elif winner == -1:
+                    return -1
+                else:
+                    return 0
+                
+    def self_play(self, player, temp=1e-3):
+        self.reset()
+        self.players = {1: player, -1: player}
+        self.board.player = 1
+        states, mcts_probs, current_players = [], [], []
+        while True:
+            move, move_probs = player.get_action(self.board, temp=temp, return_prob=1)
+            # 存储数据
+            states.append(self.board.current_state())
+            mcts_probs.append(move_probs)
+            current_players.append(self.board.player)
+            # 执行动作
+            self.board.move(move[0], move[1])
+            game_over, winner = self.board.is_game_over()
+            if game_over:
+                winners_z = np.zeros(len(current_players))
+                if winner != 0:
+                    winners_z[np.array(current_players) == winner] = 1.0
+                    winners_z[np.array(current_players) != winner] = -1.0
+                # 重置MCTS根节点
+                player.reset_player()
+                return winner, zip(states, mcts_probs, winners_z)
+            
+
 if __name__ == "__main__":
     print("game start")
     player1 = HumanPlayer(1)
