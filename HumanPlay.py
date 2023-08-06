@@ -9,7 +9,7 @@ class HumanPlayer:
 
     def get_action(self, board):
         while True:
-            if self.color == 1 and board.get_valid_moves().shape[0] == 121:
+            if board.get_valid_moves().shape[0] == 121:
                 print("Red's first move must be at C1 (1 2).")
                 return 1, 2
             move = input("Enter your move in format 'x y': ")
@@ -87,6 +87,8 @@ class VirtualGame:
             mcts_probs.append(move_probs)
             current_players.append(self.board.player)
             # 执行动作
+            #print("move is: ", move)
+            #print("move_probs is: ", move_probs)
             self.board.move(move[0], move[1])
             game_over, winner = self.board.is_game_over()
             if game_over:

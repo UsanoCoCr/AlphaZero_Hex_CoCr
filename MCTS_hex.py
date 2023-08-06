@@ -129,8 +129,7 @@ class MCTS:
             self.root = Node()
 
 class MCTSPlayer:
-    def __init__(self, color, c_puct=0.5, iterations=1000):
-        self.color = color
+    def __init__(self, c_puct=0.5, iterations=1000):
         self.mcts = MCTS(policy_fn, c_puct, iterations)
 
     def set_player_ind(self, p):
@@ -140,7 +139,7 @@ class MCTSPlayer:
         self.mcts.update_move(-1)
 
     def get_action(self, board):
-        if self.color == 1 and board.get_valid_moves().shape[0] == 121:
+        if board.get_valid_moves().shape[0] == 121:
             return 1, 2
         sensible_moves = board.get_valid_moves()
         if len(sensible_moves) > 0:

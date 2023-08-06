@@ -112,8 +112,7 @@ class MCTS:
             self.root = Node()
 
 class MCTSPlayer:
-    def __init__(self, color, policy_value_function=None, c_puct=0.5, iterations=1000, is_selfplay=0):
-        self.color = color
+    def __init__(self, policy_value_function=None, c_puct=0.5, iterations=1000, is_selfplay=0):
         self.mcts = MCTS(policy_value_function, c_puct, iterations)
         self.is_selfplay = is_selfplay
 
@@ -124,8 +123,11 @@ class MCTSPlayer:
         self.mcts.update_move(-1)
 
     def get_action(self, board, temp=1e-3, return_prob=0):
-        if self.color == 1 and board.get_valid_moves().shape[0] == 121:
-            return 1, 2
+        if board.get_valid_moves().shape[0] == 121:
+            if return_prob == 1:
+                move = np.array([1, 2])
+                move_probs = np.zeros(board.size**2)
+                return move, move_probs
         sensible_moves = board.get_valid_moves()
         move_probs = np.zeros(board.size**2)
         if len(sensible_moves) > 0:
@@ -139,8 +141,8 @@ class MCTSPlayer:
                 # 选择最大概率的动作
                 move = np.random.choice(actions, p=probs)
                 self.mcts.update_move(-1)
-        
-            if return_prob:
+
+            if return_prob == 1:
                 return move, move_probs
             else:
                 return move

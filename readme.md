@@ -36,3 +36,7 @@
 - 增加了train.py
 - 增加了ActorCriticNetwork.py，实现了ActorCritic网络的搭建
 - 改进了GameRule.py，增加VirtualGame类，实现了抽象对局
+
+### 2023.8.6
+- 修改了policy=None的错误
+- 发现board存储格式影响训练过程中算法，待添加dictionary存储格式

@@ -71,6 +71,7 @@ class Board:
 
         square_state = np.zeros((4, self.size, self.size))
         if not np.all(self.board == 0):
+            #问题出在建模上，我的board是二维np数组，原作者的state是字典，需要修改为字典
             moves, players = np.array(list(zip(*self.board.items())))
             move_curr = moves[players == self.player]
             move_oppo = moves[players != self.player]
