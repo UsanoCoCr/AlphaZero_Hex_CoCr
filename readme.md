@@ -19,7 +19,37 @@
 - 红方第一手必须落在棋盘的C1位置（Hex棋先手优势过大，所以强制规定第一手C1以限制先手优势。C1是强软研究得到的最平衡点）
 - 红连接上-下棋盘判红胜利，蓝连接左-右棋盘判蓝胜利，没有平局
 
-## 3. 更新日志
+## 3. 开始任务
+想在本地进行Hex对局，你可以遵循以下步骤：
+### 1.安装项目
+想要在本地运行项目，你可以在安装git后，进入一个目录下并运行：
+```
+git clone https://github.com/UsanoCoCr/AlphaZero_Hex_CoCr.git
+```
+项目基于Pytorch实现，请你根据自己的GPU版本以及Python版本安装Pytorch。同时，你可以使用pip安装其他依赖：
+```
+pip install numpy
+pip install copy
+pip install operator
+```
+### 2.开始对局
+如果你想在本地利用TUI进行对局，你可以进入项目根目录，运行：
+```
+python HumanPlay.py
+```
+如果你想进行人人对局，请修改HumanPlay.py中的player2：
+```
+player2 = HumanPlayer(-1)
+```
+再运行指令即可
+### 3.开始训练
+如果你想在本地训练神经网络，请进入项目根目录，运行：
+```
+python train.py
+```
+**注意：现在的训练过程，由于MCTS并没有放在GPU上，所以训练速度很慢，此过程作者还没有开始进行，不建议在本地运行。**
+
+## 4. 更新日志
 ### 2023.8.3
 - 完成GameRule.py，实现了游戏状态的建模
 - 实现了HumanPlay.py的基础设置，支持人类玩家游玩
