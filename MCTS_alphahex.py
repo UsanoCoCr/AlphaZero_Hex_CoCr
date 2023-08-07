@@ -11,8 +11,8 @@ class Node:
         self.parent = parent
         self.children = {}
         self.visits = 0
-        self.Q = 0
-        self.U = 0
+        self.Q = 0.0
+        self.U = 0.0
         self.prior = prior
     
     def is_leaf(self):
@@ -26,32 +26,18 @@ class Node:
         self.Q += (result - self.Q) / self.visits
 
     def get_value(self, c_puct):
-        """Calculate and return the value for this node.
-            It is a combination of leaf evaluations Q, and this node's prior
-            adjusted for its visit count, u.
-            c_puct: a number in (0, inf) controlling the relative impact of
-                value Q, and prior probability P, on this node's score.
-        """
         self.U = c_puct * self.prior * np.sqrt(self.parent.visits) / (1 + self.visits)
         return self.Q + self.U
     
     def select(self, c_puct):
-        """select action among children that gives maximum action value Q
-        plus bonus u(P).
-        return: a node from where search will continue.
-        """
-        action, node = max(self.children.items(), key=lambda item: item[1].get_value(c_puct))
+        action, node = max(self.children.items(), key=lambda act_node: act_node[1].get_value(c_puct))
         return action, node
-
     
     def expand(self, action_priors):
-        """Expand tree by creating new children.
-        action_priors: a list of tuples of actions and their prior probability
-            according to the policy function.
-        """
         for action, prob in action_priors:
-            if action not in self.children:
-                self.children[action] = Node(parent=self, prior=prob)
+            action_tuple = tuple(action.tolist())
+            if action_tuple not in self.children:
+                self.children[action_tuple] = Node(parent=self, prior=prob)
 
     def backpropagation(self, result):
         """backpropagation update node values from leaf evaluation.
@@ -81,8 +67,7 @@ class MCTS:
             action, node = node.select(self.c_puct)
             board.move(action[0], action[1])
         
-        #print("policy: ", self.policy)
-        action_probs, _ = self.policy(board)
+        action_probs, leaf_value = self.policy(board)
         game_over, winner = board.is_game_over()
         if not game_over:
             node.expand(action_probs)
@@ -101,15 +86,21 @@ class MCTS:
         # 根据访问次数分配概率
         action_visits = [(action, node.visits) for action, node in self.root.children.items()]
         actions, visits = zip(*action_visits)
-        action_probs = softmax(1.0/temp * np.log(np.array(visits) + 1e-10))
+        tensor = torch.tensor(1.0/temp * np.log(np.array(visits) + 1e-10))
+        action_probs = torch.nn.functional.softmax(tensor, dim=0).numpy()
         return actions, action_probs
         
     def update_move(self, last_action):
+        # 确保 last_action 是元组类型
+        if not isinstance(last_action, tuple):
+            last_action = tuple(last_action)
+            
         if last_action in self.root.children:
             self.root = self.root.children[last_action]
             self.root.parent = None
         else:
             self.root = Node()
+
 
 class MCTSPlayer:
     def __init__(self, policy_value_function=None, c_puct=0.5, iterations=1000, is_selfplay=0):
@@ -132,10 +123,14 @@ class MCTSPlayer:
         move_probs = np.zeros(board.size**2)
         if len(sensible_moves) > 0:
             actions, probs = self.mcts.get_move(board, temp)
-            move_probs[list(actions)] = probs
+            for action, prob in zip(actions, probs):
+                index = action[0] * 11 + action[1]
+                move_probs[index] = prob
             if self.is_selfplay:
                 # 添加噪声提高探索性
-                move = np.random.choice(actions, p=0.75*probs + 0.25*np.random.dirichlet(0.3*np.ones(len(probs))))
+                actions_1d = [action[0] * 11 + action[1] for action in actions]
+                move_1d = np.random.choice(actions_1d, p=0.75*probs + 0.25*np.random.dirichlet(0.3*np.ones(len(probs))))
+                move = np.array([move_1d // 11, move_1d % 11])
                 self.mcts.update_move(move)
             else:
                 # 选择最大概率的动作

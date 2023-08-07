@@ -87,8 +87,6 @@ class VirtualGame:
             mcts_probs.append(move_probs)
             current_players.append(self.board.player)
             # 执行动作
-            #print("move is: ", move)
-            #print("move_probs is: ", move_probs)
             self.board.move(move[0], move[1])
             game_over, winner = self.board.is_game_over()
             if game_over:

@@ -64,6 +64,7 @@ class Train():
         # 收集自我对弈数据
         for i in range(n_games):
             winner, play_data = self.game.self_play(self.mcts_player, temp=self.temp)
+            print("self play winner is:", winner)
             play_data = list(play_data)[:]
             self.episode_len = len(play_data)
             play_data = self.get_equi_data(play_data)

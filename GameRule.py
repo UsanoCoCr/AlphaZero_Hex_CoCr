@@ -9,11 +9,13 @@ class Board:
     def reset(self):
         self.board = np.zeros((self.size, self.size))
         self.player = 1
+        self.last_move = -1
 
     def move(self, x, y):
         assert self.board[x, y] == 0, "Invalid move"
         self.board[x, y] = self.player
         self.player *= -1
+        self.last_move = x * self.size + y
 
     def get_valid_moves(self):
         return np.argwhere(self.board == 0)
@@ -72,7 +74,10 @@ class Board:
         square_state = np.zeros((4, self.size, self.size))
         if not np.all(self.board == 0):
             #问题出在建模上，我的board是二维np数组，原作者的state是字典，需要修改为字典
-            moves, players = np.array(list(zip(*self.board.items())))
+            player1_moves = np.array(np.where(self.board == 1)).T
+            player2_moves = np.array(np.where(self.board == -1)).T
+            moves = np.concatenate((player1_moves, player2_moves))
+            players = np.array([1]*len(player1_moves) + [-1]*len(player2_moves))
             move_curr = moves[players == self.player]
             move_oppo = moves[players != self.player]
             square_state[0][move_curr // self.size,

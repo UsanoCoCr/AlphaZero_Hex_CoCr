@@ -91,7 +91,8 @@ class PolicyValueNet():
             log_act_probs, value = self.policy_value_net(
                     Variable(torch.from_numpy(current_state)).float())
             act_probs = np.exp(log_act_probs.data.numpy().flatten())
-        act_probs = zip(legal_positions, act_probs[legal_positions])
+        probs = [act_probs[pos[0] * self.board_width + pos[1]] for pos in legal_positions]
+        act_probs = zip(legal_positions, probs)
         value = value.data[0][0]
         return act_probs, value
     
